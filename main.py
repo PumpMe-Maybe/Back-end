@@ -41,26 +41,8 @@ def predict(data: InputData):
     new_data = pd.DataFrame([data_dict])
     prediction = loaded_model.predict(new_data)
     if prediction[0] == 1:
-        return {"prediction": "The patient is likely to have diabetes"}
+        print(type(prediction[0]))
+        return {"prediction":  int(prediction[0]), "message": "The patient is likely to have diabetes"}
     else:
-        return {"prediction": "The patient is not likely to have diabetes"}
+        return {"prediction": int(prediction[0]), "message": "The patient is not likely to have diabetes"}
     
-    
-# @app.get('/test')
-# def test():
-#     experiment = comet_ml.start(experiment_key="ae0f79f9b30343de850bc40de6f9acbf")
-
-
-
-#     new_data = pd.DataFrame({
-#         'gender': [0],
-#         'hypertension': [0],
-#         'heart_disease': [0],
-#         'age': [50.0],
-#         'bmi': [25.0],
-#         'HbA1c_level': [600.0],
-#         'blood_glucose_level': [100]
-#     })
-
-#     prediction = loaded_model.predict(new_data)
-#     print(prediction)
