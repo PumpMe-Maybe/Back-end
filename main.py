@@ -13,6 +13,36 @@ origins = [
     "*"
 ]
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Clé API et informations du modèle
+COMET_API_KEY = "6l3PPIsKeGgBrUF4d5Lv0XKmW"
+WORKSPACE = "justrunnz"
+MODEL_NAME = "diabetes-predict-model"
+MODEL_VERSION = "1.2.0"
+
+comet_ml.login()
+
+loaded_model = load_model("registry://justrunnz/diabetes-predict-model")
+
+
+
+class InputData(BaseModel):
+    gender: str
+    hypertension: bool
+    heart_disease: bool
+    age: int
+    bmi: float
+    hba1c_level: float
+    blood_glucose_level: int
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
