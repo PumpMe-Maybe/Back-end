@@ -39,7 +39,7 @@ class InputData(BaseModel):
     heart_disease: bool
     age: int
     bmi: float
-    hba1c_level: int
+    hba1c_level: float
     blood_glucose_level: int
 
 
@@ -55,7 +55,6 @@ def predict(data: InputData):
     hypertension = 1 if data_dict['hypertension'] == True else 0
     heart_disease = 1 if data_dict['heart_disease'] == True else 0
     data_dict['age'] = float(data_dict['age'])
-    data_dict['hba1c_level'] = float(data_dict['hba1c_level'])
     # new_data = pd.DataFrame([data_dict])
     new_data = pd.DataFrame([
         {
