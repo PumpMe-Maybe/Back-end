@@ -42,10 +42,29 @@ class InputData(BaseModel):
     hba1c_level: float
     blood_glucose_level: int
 
+def check_comet_connection():
+    try:
+        api = API(api_key=COMET_API_KEY)
+        projects = api.get_workspaces()
+        return True
+    except Exception as e:
+        print(f"Erreur de connexion à Comet ML : {e}")
+        return False
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/healthcheck")
+def healthcheck():
+    if check_comet_connection():
+        return {"status": "healthy", "message": "API fonctionne correctement, connectée à Comet ML."}
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="Erreur de connexion à Comet ML. Vérifiez votre clé API ou votre réseau."
+        )
 
 
 @app.post("/predict/")
