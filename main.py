@@ -4,9 +4,22 @@ from comet_ml import API
 from comet_ml.integration.sklearn import load_model, log_model
 import pandas as pd
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+origins = [
+    # put all origin
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Clé API et informations du modèle
 COMET_API_KEY = "6l3PPIsKeGgBrUF4d5Lv0XKmW"
@@ -21,12 +34,12 @@ loaded_model = load_model("registry://justrunnz/diabetes-predict-model")
 
 
 class InputData(BaseModel):
-    gender: int
-    hypertension: int
-    heart_disease: int
-    age: float
+    gender: str
+    hypertension: bool
+    heart_disease: bool
+    age: int
     bmi: float
-    HbA1c_level: float
+    hba1c_level: int
     blood_glucose_level: int
 
 
@@ -38,11 +51,26 @@ def read_root():
 @app.post("/predict/")
 def predict(data: InputData):
     data_dict = data.dict()
-    new_data = pd.DataFrame([data_dict])
+    gender = 1 if data_dict['gender'] == 'male' else 0
+    hypertension = 1 if data_dict['hypertension'] == True else 0
+    heart_disease = 1 if data_dict['heart_disease'] == True else 0
+    data_dict['age'] = float(data_dict['age'])
+    data_dict['hba1c_level'] = float(data_dict['hba1c_level'])
+    # new_data = pd.DataFrame([data_dict])
+    new_data = pd.DataFrame([
+        {
+            "gender": gender,
+            "hypertension": hypertension,
+            "heart_disease": heart_disease,
+            "age": data_dict['age'],
+            "bmi": data_dict['bmi'],
+            "HbA1c_level": data_dict['hba1c_level'],
+            "blood_glucose_level": data_dict['blood_glucose_level']
+        }
+    ])
     prediction = loaded_model.predict(new_data)
     if prediction[0] == 1:
-        print(type(prediction[0]))
-        return {"prediction":  int(prediction[0]), "message": "The patient is likely to have diabetes"}
+        return {"prediction":  True, "message": "The patient is likely to have diabetes"}
     else:
-        return {"prediction": int(prediction[0]), "message": "The patient is not likely to have diabetes"}
+        return {"prediction": False, "message": "The patient is not likely to have diabetes"}
     
