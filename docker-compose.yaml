@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      COMET_API_KEY: "6l3PPIsKeGgBrUF4d5Lv0XKmW"
+      WORKSPACE: "justrunnz"
+      MODEL_NAME: "diabetes-predict-model"
+      MODEL_VERSION: "1.2.0"

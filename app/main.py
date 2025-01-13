@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 origins = [
-    # put all origin
     "*"
 ]
 
@@ -30,18 +29,11 @@ MODEL_VERSION = "1.2.0"
 
 comet_ml.login()
 
+experiment = comet_ml.start(experiment_key="2d98664f833d477e93de91acf49bf5e8")
+
 loaded_model = load_model("registry://justrunnz/diabetes-predict-model")
 
 
-
-class InputData(BaseModel):
-    gender: str
-    hypertension: bool
-    heart_disease: bool
-    age: int
-    bmi: float
-    hba1c_level: float
-    blood_glucose_level: int
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,15 +43,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Clé API et informations du modèle
-COMET_API_KEY = "6l3PPIsKeGgBrUF4d5Lv0XKmW"
-WORKSPACE = "justrunnz"
-MODEL_NAME = "diabetes-predict-model"
-MODEL_VERSION = "1.2.0"
-
-comet_ml.login()
-
-loaded_model = load_model("registry://justrunnz/diabetes-predict-model")
 
 
 
@@ -117,6 +100,7 @@ def predict(data: InputData):
         }
     ])
     prediction = loaded_model.predict(new_data)
+    # prediction = experiment.predict(new_data)
     if prediction[0] == 1:
         return {"prediction":  True, "message": "The patient is likely to have diabetes"}
     else:
